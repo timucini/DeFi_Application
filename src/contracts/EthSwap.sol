@@ -9,6 +9,19 @@ contract EthSwap {
     ThesisToken public token;
     uint public rate = 100;
 
+    address public owner;
+
+    // address of staking addresses;
+    address[] public stakers;
+
+    // the stalking balance for a specific User
+    mapping(address => uint) public stakingBalance;
+
+    // check if the address has Staked
+    mapping(address => bool) public hasStaked;
+
+    mapping(address => bool) public isStaking;
+
     event TokenPurchased(
         address account,
         address token,
@@ -30,12 +43,12 @@ contract EthSwap {
 
     // payable to send ether
     function buyTokens() public payable {
-        // redemption rate = # of tokns they receive for 1 ether
+        // redemption rate = # of tokens they receive for 1 ether
         // Amount of Ethereum * Redemption rate
         // Calculate the number of tokens to buy -> msg.value is the amount of ether that is sended
         uint tokenAmount = msg.value * rate;
 
-        // integrate a require -> check if ethSwap balance of Dapp tokens is enough -> this is the address of the ethSwap Contract
+        // integrate a require -> check if ethSwap balance of thesis tokens is enough -> this is the address of the ethSwap Contract
         // require ethSwap have enough tokens
         require(
             token.balanceOf(address(this)) >= tokenAmount
@@ -57,7 +70,7 @@ contract EthSwap {
         // require that EthSwap has enough Ether
         require(address(this).balance >= etherAmount);
 
-        // Perfom sale -> transfer Dapp Tokens back to EthSwap -> again use the address of the contract -> this
+        // Perfom sale -> transfer Thesis Tokens back to EthSwap -> again use the address of the contract -> this
         // we can not use the simple transfer function on an ERC-20 Token
         // instead we have to use the transferFrom function -> to allow transfer from an address to EthSwap
         token.transferFrom(msg.sender, address(this), _amount);
@@ -68,5 +81,62 @@ contract EthSwap {
 
         // emit an Event
         emit TokensSold(msg.sender, address(token), _amount, rate);
+    }
+
+    // 1. Stakes Tokens (Deposit)
+    function stakeTokens(uint _amount) public {
+        // require amount to stake is greater than 0 
+        require(_amount > 0, "amount cannot be 0");
+
+        //msg.sender.approve(msg.sender, _amount);
+        // Transfer eth to this (tokenfarm) contract for staking
+        payable(owner).transfer(_amount);
+
+        // Update staking balance
+        stakingBalance[msg.sender] =  stakingBalance[msg.sender] + _amount;
+
+        // Add user to stakers array if they haven't staked already
+        if(!hasStaked[msg.sender]) {
+            // the stakers array should only contain addresses once
+            stakers.push(msg.sender);
+        }
+
+        // update staking status
+        hasStaked[msg.sender] = true;
+        isStaking[msg.sender] = true;
+    }
+    // 2. Issuing Tokens -> reward (triggered only by owner)
+    function issueToken() public {
+        // this functions should only be triggered by the owner of the smart contract
+        require(msg.sender == owner, "caller must be owner");
+
+        // loop through stakers array
+        for(uint i=0; i < stakers.length; i++) {
+            address recipient = stakers[i];
+            // for each staker get the balance of the staked thesis Tokens -> stakingBalance
+            uint balance =  stakingBalance[recipient];
+            if(balance > 0 ) {
+                // send them the same amount of thesis Tokens
+            token.transfer(recipient, balance);
+            }
+        }
+    }
+
+    // 3. Unstaking Tokens (Withdraw) -> allow investor to remove tokens from the application -> from the tokaneFarm
+    function unstakeTokens() public {
+
+        // Fetch staking balance
+        uint balance = stakingBalance[msg.sender];
+        // require amount greater than 0
+        require(balance > 0 , "staking balance cannot be 0");
+
+        // transfer eth to this contract for staking
+        payable(msg.sender).transfer(balance);
+
+        // reset the staking balance
+        stakingBalance[msg.sender] = 0;
+
+        // update staking status
+        isStaking[msg.sender] = false;
     }
 }

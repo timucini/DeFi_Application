@@ -1,7 +1,7 @@
 const ThesisToken = artifacts.require("ThesisToken");
 const EthSwap = artifacts.require("EthSwap");
 
-module.exports = async function (deployer) {
+module.exports = async function (deployer, network, accounts) {
     // deploy Token
     await deployer.deploy(ThesisToken);
     const token = await ThesisToken.deployed()
@@ -12,4 +12,5 @@ module.exports = async function (deployer) {
 
     // Transfer all tokens to EthSwap(1 Million)
     await token.transfer(ethSwap.address, '1000000000000000000000000')
+    
 };
