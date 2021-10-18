@@ -39,6 +39,7 @@ contract EthSwap {
     // if variable in constructor -> then it needs to be passed in the migration
     constructor(ThesisToken _token) public {
         token = _token;
+        owner = msg.sender;
     }
 
     // payable to send ether
@@ -84,16 +85,16 @@ contract EthSwap {
     }
 
     // 1. Stakes Tokens (Deposit)
-    function stakeTokens(uint _amount) public {
+    function stakeTokens() payable public {
         // require amount to stake is greater than 0 
-        require(_amount > 0, "amount cannot be 0");
+        require(msg.value > 0, "amount cannot be 0");
 
-        //msg.sender.approve(msg.sender, _amount);
+        //msg.sender.approve(msg.sender, msg.value);
         // Transfer eth to this (tokenfarm) contract for staking
-        payable(owner).transfer(_amount);
+        payable(owner).transfer(msg.value);
 
         // Update staking balance
-        stakingBalance[msg.sender] =  stakingBalance[msg.sender] + _amount;
+        stakingBalance[msg.sender] =  stakingBalance[msg.sender] + msg.value;
 
         // Add user to stakers array if they haven't staked already
         if(!hasStaked[msg.sender]) {
@@ -123,7 +124,7 @@ contract EthSwap {
     }
 
     // 3. Unstaking Tokens (Withdraw) -> allow investor to remove tokens from the application -> from the tokaneFarm
-    function unstakeTokens() public {
+    function unstakeTokens() payable public {
 
         // Fetch staking balance
         uint balance = stakingBalance[msg.sender];

@@ -126,44 +126,42 @@ contract('EthSwap', ([deployer, investor]) => {
 
             // IMPORTANT: Before we can stake the token, the investor must approve eth to be deposited into the tokenFarm
             */
-            await token.approve(investor, tokens('10'), { from: investor })
-            await ethSwap.stakeTokens(tokens('10'), { from: investor } )
-            /*
-            // Stake Mock DAI Token
-            await ethSwap.stakeTokens(tokens('10'), { from: investor } )
-
+            await token.approve(investor, tokens('1'), { from: investor })
+            await ethSwap.stakeTokens({ from: investor, value: tokens('1')})
+            
+            
             // Check staking result after staking
             result = await token.balanceOf(investor)
-            //assert.equal(result.toString(), tokens('0'), 'investor Mock Dai wallet balance correct after staking')
+            assert.equal(result.toString(), tokens('0'), 'investor Mock Dai wallet balance correct after staking')
 
             result = await token.balanceOf(ethSwap.address)
-            assert.equal(result.toString(), tokens('10'), 'Token Farm Mock Dai wallet balance correct after staking')
-            /*
+            assert.equal(result.toString(), tokens('1000000'), 'Token Farm Mock Dai wallet balance correct before staking')
+            
             result = await ethSwap.isStaking(investor)
             assert.equal(result.toString(), 'true', 'investor staking status correct after staking')
-
-
+            
+            
             // Issue tokens
             await ethSwap.issueToken({ from: deployer }) 
 
             // check balances after issuance -> investor should get the issued token after issueToken has been called by the owner of the smart contract
             result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('100'), 'investor DApp Token wallet balance correct after issuance')
-
+            assert.equal(result.toString(), tokens('1'), 'investor DApp Token wallet balance correct after issuance')
+            
             // Ensure that only onwer can issue tokens
             await ethSwap.issueToken({ from: investor}).should.be.rejected;
-
+            
             // unstake tokens
             await ethSwap.unstakeTokens({ from: investor})
-
+            /*
             // check results after unstaking of Dai Token of investor
             result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('100'), 'investor Mock Dai Token balance correct after staking');
+            assert.equal(result.toString(), tokens('1'), 'investor Mock Dai Token balance correct after staking');
 
             // check results after unstaking of Dai Token of tokenFarm
             result = await token.balanceOf(ethSwap.address)
             assert.equal(result.toString(),tokens('0'), 'TokenFarm Mock Dai baalance correct after staking')
-
+            /*
             // check staking balance of investor
             result = await token.stakingBalance(investor)
             assert.equal(result.toString(), tokens('0'), 'investor staking balance correct after staking')
