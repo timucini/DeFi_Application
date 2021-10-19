@@ -127,17 +127,21 @@ contract EthSwap {
     function unstakeTokens() payable public {
 
         // Fetch staking balance
-        uint balance = stakingBalance[msg.sender];
+        //uint balance = stakingBalance[msg.sender]; // here ERROR? Maybe 0?
+        //uint balance = 1000000000000000000;
         // require amount greater than 0
-        require(balance > 0 , "staking balance cannot be 0");
+        uint balance = stakingBalance[msg.sender];
+        require(balance >= msg.value , "Cannot unstake more eth than staked");
 
         // transfer eth to this contract for staking
-        payable(msg.sender).transfer(balance);
+        payable(msg.sender).transfer(msg.value);
 
         // reset the staking balance
-        stakingBalance[msg.sender] = 0;
+        stakingBalance[msg.sender] = balance - msg.value;
 
-        // update staking status
-        isStaking[msg.sender] = false;
+        if(stakingBalance[msg.sender] == 0) {
+            // update staking status
+            isStaking[msg.sender] = false;
+        } 
     }
 }

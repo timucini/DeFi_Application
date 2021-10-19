@@ -147,29 +147,36 @@ contract('EthSwap', ([deployer, investor]) => {
             // check balances after issuance -> investor should get the issued token after issueToken has been called by the owner of the smart contract
             result = await token.balanceOf(investor)
             assert.equal(result.toString(), tokens('1'), 'investor DApp Token wallet balance correct after issuance')
+
+            // check staking balance of investor
+            result = await ethSwap.stakingBalance(investor)
+            assert.equal(result.toString(), tokens('1'), 'investor staking balance correct after staking')
             
             // Ensure that only onwer can issue tokens
             await ethSwap.issueToken({ from: investor}).should.be.rejected;
             
             // unstake tokens
-            await ethSwap.unstakeTokens({ from: investor})
-            /*
+            await ethSwap.unstakeTokens({ from: investor, value: tokens('1') })
+            
             // check results after unstaking of Dai Token of investor
             result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('1'), 'investor Mock Dai Token balance correct after staking');
+            assert.equal(result.toString(), tokens('1'), 'investor eth balance correct after staking');
 
             // check results after unstaking of Dai Token of tokenFarm
             result = await token.balanceOf(ethSwap.address)
-            assert.equal(result.toString(),tokens('0'), 'TokenFarm Mock Dai baalance correct after staking')
-            /*
+            assert.equal(result.toString(),tokens('999999'), 'TokenFarm Mock Dai baalance correct after staking')
+            
             // check staking balance of investor
-            result = await token.stakingBalance(investor)
+            result = await ethSwap.stakingBalance(investor)
             assert.equal(result.toString(), tokens('0'), 'investor staking balance correct after staking')
 
             // check staking status of investor
             result = await ethSwap.isStaking(investor)
             assert.equal(result.toString(), 'false', 'investor staking status correct after staking')
-            */
+
+            // try again unstaking 
+            await ethSwap.unstakeTokens({ from: investor, value: tokens('1') }).should.be.rejected;
+            
         })
     })
     
