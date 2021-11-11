@@ -1,108 +1,159 @@
-import logo from '../logo.svg';
-import React, { useState, useEffect } from "react";
+import React, { Component } from 'react';
 import Web3 from 'web3';
 import '../styling/App.css';
-import ThesisToken from '../abis/ThesisToken.json'
+import Token from '../abis/ThesisToken.json'
 import EthSwap from '../abis/EthSwap.json'
+import Navbar from './Navbar';
+import Main from './Main';
 
-function App() {
-  const [account, setAccount] = useState('0x0');
-  const [thesisToken, setThesisToken] = useState([]);
-  const [ethSwap, setEthSwap] = useState([]);
-  const [thesisTokenBalance, setThesisTokenBalance] = useState('0');
-  const [ethBalance, setEthBalance] = useState('0');
-  const [stakingBalance, setStakingBalance] = useState('0');
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    loadWeb3();
-  }, []);
+class App extends Component {
 
+  async componentWillMount() {
+    await this.loadWeb3()
+    await this.loadBlockchainData()
+    this.getStakingBalance()
+  }
   
-  // to connect with Metamask -> to connect to a Blockchain
-  const loadWeb3 =  async () => {
-    if(window.ethereum) {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const requestAccount = accounts[0]
-      setAccount(requestAccount)
-      await loadBlockchainData(requestAccount);
-    }
-    else {
-      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+  constructor(props) {
+    super(props)
+    this.state = {
+      account: '',
+      token: {},
+      ethSwap: {},
+      ethBalance: '0',
+      tokenBalance: '0',
+      loading: true,
+      stakingBalance: '0'
     }
   }
 
-  const loadBlockchainData = async (requestAccount) => {
-    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-    const ethAmount = await web3.eth.getBalance(requestAccount)
 
-    setEthBalance(ethAmount)
+  async loadBlockchainData() {
+    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    const ethAmount = await web3.eth.getBalance(this.state.account)
+
+    this.setState({ ethBalance: ethAmount})
     
-    // Load thesisToken
-    const networkId = await web3.eth.net.getId() 
-    const thesisTokenData = ThesisToken.networks[networkId]
-    if(thesisTokenData) {
-      // load the json ABI File of the Contract with the network Id
-      const thesisToken = new web3.eth.Contract(ThesisToken.abi, thesisTokenData.address) // -> create a JavaScript Version (web3-Version) of the Contract
-      setThesisToken(thesisToken)
-      console.log(requestAccount)
-      let thesisTokenBalance = await thesisToken.methods.balanceOf(requestAccount).call() // fetch the Balance of the account (Smart-Contract Method) -> call when you reading information
-      setThesisTokenBalance(thesisTokenBalance.toString());
-      console.log(thesisTokenBalance)
-      console.log("loaded ThesisToken Contract")
+    // Load Token
+    const networkId =  await web3.eth.net.getId()
+    const tokenData = Token.networks[networkId]
+    if(tokenData) {
+      const token = new web3.eth.Contract(Token.abi, tokenData.address)
+      this.setState({ token })
+      let tokenBalance = await token.methods.balanceOf(this.state.account).call()
+      this.setState({ tokenBalance: tokenBalance.toString() })
     } else {
-      window.alert('ThesisToken contract not deployed to detacted network.')
+      window.alert('Token contract not deployed to detected network.')
     }
 
     // Load EthSwap
     const ethSwapData = EthSwap.networks[networkId]
     if(ethSwapData) {
       const ethSwap = new web3.eth.Contract(EthSwap.abi, ethSwapData.address)
-      setEthSwap(ethSwap)
-      console.log("Loaded Ethswap")
-      console.log("EthBalance" + ethBalance)
+      this.setState({ ethSwap })
     } else {
       window.alert('EthSwap contract not deployed to detected network.')
     }
 
-    setLoading(false)
+    this.setState({ loading: false })
+    console.log(this.state.token)
   }
 
-  const buyTokens = (etherAmount) => {
-    setLoading(true)
-    ethSwap.methods.buyTokens().send({ value: etherAmount, from: account }).on('transactionHash', (hash) => {
-      setLoading(false)
+
+  // load ethererum provider with MetaMask
+  async loadWeb3() {
+    if(window.ethereum) {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const requestAccount = accounts[0]
+        this.setState({ account: requestAccount})
+      }
+      else {
+        window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      }
+  }
+
+  buyTokens = (etherAmount) => {
+    this.setState({ loading: true })
+    this.state.ethSwap.methods.buyTokens().send({ value: etherAmount, from: this.state.account }).on('transactionHash', (hash) => {
+      this.setState({ loading: false })
     })
   }
 
-  const sellTokens = (tokenAmount) => {
-    setLoading(true)
+  sellTokens = (tokenAmount) => {
+    this.setState({ loading: true })
+    console.log("EthSwap Address: " + this.state.ethSwap._address)
+    console.log(this.state.ethSwap)
+    console.log("Sender Account: " + this.state.account)
     // NEED TO APPROVE IT BEFORE SELL!!
-    thesisToken.methods.approve(ethSwap.address, tokenAmount).send({ from: account }).on('transactionHash', (hash) => {
-      ethSwap.methods.sellTokens(tokenAmount).send({ from: account }).on('transactionHash', (hash) => {
-        setLoading(false)
+    this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account }).on('transactionHash', (hash) => {
+      this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', (hash) => {
+        this.setState({ loading: false })
       })
     })
   }
-  
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+  stakeTokens = (amount) => {
+    this.setState({ loading: true })
+    this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', (hash) => {
+      this.setState({ loading: false })
+    })
+  }
+
+  unstakeTokens = (amount) => {
+    this.setState({ loading: true })
+    this.state.ethSwap.methods.unstakeTokens().send({ from: this.state.account, value: amount }).on('transactionHash', (hash) => {
+      let balance = this.state.stakingBalance + amount
+      this.setState({ stakingBalance: balance})
+      this.setState({ loading: false })
+    })
+  }
+
+  getStakingBalance = async () => {
+    let balance  = await this.state.ethSwap.methods.stakingBalance(this.state.account).call()
+    this.setState({ stakingBalance: balance.toString() })
+    console.log(this.state.stakingBalance)
+  }
+
+
+  render() {
+    let content
+    if(this.state.loading) {
+      content = <p id="loader" className="text-center">Loading...</p>
+    } else {
+      content = <Main
+        ethBalance={this.state.ethBalance}
+        tokenBalance={this.state.tokenBalance}
+        buyTokens={this.buyTokens}
+        sellTokens={this.sellTokens}
+        stakeTokens={this.stakeTokens}
+        unstakeTokens={this.unstakeTokens}
+        stakingBalance={this.state.stakingBalance}
+      />
+    }
+
+    return (
+      <div>
+        <Navbar account={this.state.account} />
+        <div className="container-fluid mt-5">
+          <div className="row">
+            <main role="main" className="col-lg-12 ml-auto mr-auto" style={{ maxWidth: '600px' }}>
+              <div className="content mr-auto ml-auto">
+                <a
+                  href="http://www.dappuniversity.com/bootcamp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                </a>
+
+                {content}
+
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
