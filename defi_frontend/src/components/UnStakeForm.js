@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Web3 from 'web3'
 
 
-class StakeForm extends Component {
+class UnStakeForm extends Component {
     
     
     render() {
@@ -35,7 +35,7 @@ class StakeForm extends Component {
           let amount
           amount = this.input.value.toString()
           amount = web3.utils.toWei(amount, 'Ether')
-          this.props.stakeTokens(amount)
+          this.props.unstakeTokens(amount)
         }}>
         <div>
           <label className="float-left"><b>Stake Tokens</b></label>
@@ -56,7 +56,7 @@ class StakeForm extends Component {
             </div>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary btn-block btn-lg">STAKE!</button>
+        <button type="submit" className="btn btn-primary btn-block btn-lg">UNSTAKE!</button>
       </form>
     </div>
     </div>
@@ -65,4 +65,4 @@ class StakeForm extends Component {
       }
     }
 
-export default StakeForm;
+export default UnStakeForm;

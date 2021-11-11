@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import BuyForm from './BuyForm'
 import SellForm from './SellForm'
 import StakeForm from './StakeForm'
+import UnStakeForm from './UnStakeForm'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 class Main extends Component {
   constructor(props) {
@@ -39,44 +42,43 @@ class Main extends Component {
     return (
       <div id="content" className="mt-3">
 
-        <div className="d-flex justify-content-between mb-3">
-          <button
-              className="btn btn-light"
-              onClick={(event) => {
-                this.setState({ currentForm: 'buy' })
-              }}
-            >
-            Buy
-          </button>
-          <span className="text-muted">&lt; &nbsp; &gt;</span>
-          <button
-              className="btn btn-light"
-              onClick={(event) => {
-                this.setState({ currentForm: 'sell' })
-              }}
-            >
-            Sell
-          </button>
-          <span className="text-muted">&lt; &nbsp; &gt;</span>
-          <button
-              className="btn btn-light"
-              onClick={(event) => {
-                this.setState({ currentForm: 'stake' })
-              }}
-            >
-            Stake
-          </button>
-        </div>
+<Tabs>
+    <TabList>
+      <Tab>Buy</Tab>
+      <Tab>Sell</Tab>
+      <Tab>Stake</Tab>
+      <Tab>Unstake</Tab>
+    </TabList>
 
-        <div className="card mb-4" >
-
-          <div className="card-body">
-
-            {content}
-
-          </div>
-
-        </div>
+    <TabPanel>
+      <BuyForm
+        ethBalance={this.props.ethBalance}
+        tokenBalance={this.props.tokenBalance}
+        buyTokens={this.props.buyTokens}
+      />
+    </TabPanel>
+    <TabPanel>
+      <SellForm
+        ethBalance={this.props.ethBalance}
+        tokenBalance={this.props.tokenBalance}
+        sellTokens={this.props.sellTokens}
+      />
+    </TabPanel>
+    <TabPanel>
+      <StakeForm
+        stakeTokens={this.props.stakeTokens}
+        stakingBalance={this.props.stakingBalance}
+        tokenBalance={this.props.tokenBalance}
+      />
+    </TabPanel>
+    <TabPanel>
+      <UnStakeForm
+        unstakeTokens={this.props.unstakeTokens}
+        stakingBalance={this.props.stakingBalance}
+        tokenBalance={this.props.tokenBalance}
+      />
+    </TabPanel>
+  </Tabs>
 
       </div>
     );

@@ -146,7 +146,7 @@ contract('EthSwap', ([deployer, investor]) => {
 
             // check balances after issuance -> investor should get the issued token after issueToken has been called by the owner of the smart contract
             result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('1'), 'investor DApp Token wallet balance correct after issuance')
+            assert.equal(result.toString(), tokens('10'), 'investor DApp Token wallet balance correct after issuance')
 
             // check staking balance of investor
             result = await ethSwap.stakingBalance(investor)
@@ -160,11 +160,11 @@ contract('EthSwap', ([deployer, investor]) => {
             
             // check results after unstaking of Dai Token of investor
             result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('1'), 'investor eth balance correct after staking');
+            assert.equal(result.toString(), tokens('10'), 'investor eth balance correct after staking');
 
             // check results after unstaking of Dai Token of tokenFarm
             result = await token.balanceOf(ethSwap.address)
-            assert.equal(result.toString(),tokens('999999'), 'TokenFarm Mock Dai baalance correct after staking')
+            assert.equal(result.toString(),tokens('999990'), 'TokenFarm Mock Dai baalance correct after staking')
             
             // check staking balance of investor
             result = await ethSwap.stakingBalance(investor)

@@ -8,6 +8,7 @@ contract EthSwap {
     string public name = "EthSwap for Token";
     ThesisToken public token;
     uint public rate = 100;
+    uint public stakingRate = 10;
 
     address public owner;
 
@@ -118,7 +119,8 @@ contract EthSwap {
             uint balance =  stakingBalance[recipient];
             if(balance > 0 ) {
                 // send them the same amount of thesis Tokens
-            token.transfer(recipient, balance);
+            uint amount = balance * stakingRate;
+            token.transfer(recipient, amount);
             }
         }
     }
