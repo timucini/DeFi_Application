@@ -69,6 +69,7 @@ class Main extends Component {
         stakeTokens={this.props.stakeTokens}
         stakingBalance={this.props.stakingBalance}
         tokenBalance={this.props.tokenBalance}
+        ethBalance={this.props.ethBalance}
       />
     </TabPanel>
     <TabPanel>

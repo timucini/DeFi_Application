@@ -24,9 +24,9 @@ class SellForm extends Component {
           this.props.sellTokens(etherAmount)
         }}>
         <div>
-          <label className="float-left"><b>Input</b></label>
+          <label className="float-left"><b>Input&nbsp;</b></label>
           <span className="float-right text-muted">
-            Balance: {web3.utils.fromWei(this.props.tokenBalance, 'Ether')}
+            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.props.tokenBalance, 'Ether')}
           </span>
         </div>
         <div className="input-group mb-4">
@@ -45,14 +45,14 @@ class SellForm extends Component {
           <div className="input-group-append">
             <div className="input-group-text">
               <img src={tokenLogo} height='32' alt=""/>
-              &nbsp; DApp
+              &nbsp; THES
             </div>
           </div>
         </div>
         <div>
           <label className="float-left"><b>Output</b></label>
           <span className="float-right text-muted">
-            Balance: {web3.utils.fromWei(this.props.ethBalance, 'Ether')}
+            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.props.ethBalance, 'Ether')}
           </span>
         </div>
         <div className="input-group mb-2">
@@ -70,9 +70,9 @@ class SellForm extends Component {
             </div>
           </div>
         </div>
-        <div className="mb-5">
+        <div className="mb-3">
           <span className="float-left text-muted">Exchange Rate</span>
-          <span className="float-right text-muted">100 DApp = 1 ETH</span>
+          <span className="float-right text-muted"> 100 THES = 1 ETH</span>
         </div>
         <button type="submit" className="btn btn-primary btn-block btn-lg">SWAP!</button>
       </form>

@@ -95,6 +95,8 @@ class App extends Component {
   stakeTokens = (amount) => {
     this.setState({ loading: true })
     this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', (hash) => {
+      let balance = this.state.stakingBalance + amount
+      this.setState({ stakingBalance: balance})
       this.setState({ loading: false })
     })
   }
@@ -102,7 +104,7 @@ class App extends Component {
   unstakeTokens = (amount) => {
     this.setState({ loading: true })
     this.state.ethSwap.methods.unstakeTokens().send({ from: this.state.account, value: amount }).on('transactionHash', (hash) => {
-      let balance = this.state.stakingBalance + amount
+      let balance = this.state.stakingBalance - amount
       this.setState({ stakingBalance: balance})
       this.setState({ loading: false })
     })

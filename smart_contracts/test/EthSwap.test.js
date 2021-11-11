@@ -17,45 +17,41 @@ contract('EthSwap', ([deployer, investor]) => {
     before(async () => {
         token= await Token.new()
         ethSwap = await EthSwap.new(token.address)
-        // transsfer all tokens to EthSwap
+        // transfer all tokens to EthSwap contract
         await token.transfer(ethSwap.address, tokens('1000000'))
 
-        // send tokens to investor
-        //await token.transfer(investor, tokens('100'), { from: deployer })
     })
 
-    describe('Token deployment', async () => {
-        it('token hat a name', async () => {
+    describe('ThesisToken deployment', async () => {    
+        it('token has a name', async () => {
             const name = await token.name()
             assert.equal(name, 'Thesis Token')
         })
     })
 
     describe('EthSwap deployment', async () => {
-        it('contract hat a name', async () => {
+        it('contract has a name', async () => {
             const name = await ethSwap.name()
             assert.equal(name, 'EthSwap for Token')
         })
+    })
 
+    describe('transfer tokens to EthSwap Contract', async () => {
         it('contract has tokens', async () => {
             let balance = await token.balanceOf(ethSwap.address)
             assert.equal(balance.toString(), tokens('1000000'))
         })
     })
 
-    describe('buyTokens()', async () => {
-        let result
+    describe('Investor buys Thesis tokens', async () => {
+        it('valid purchase of tokens from ethSwap for a fixed price', async () => {
+            let result = await ethSwap.buyTokens({ from: investor, value: tokens('1')})
 
-        before(async () => {
-            // Purchase tokens before each example
-            result = await ethSwap.buyTokens({ from: investor, value: tokens('1')})
-        })
-        it('allows user to purcahase tokens from ethSwap for a fixed price', async () => {
             // Check investor token balance after purchase
             let investorBalance = await token.balanceOf(investor)
             assert.equal(investorBalance.toString(), tokens('100'))
 
-            // check ethSwap balance after purchase -> should be minus the bought one (Dapp Token)
+            // check ethSwap contract balance after purchase -> should be minus the bought one (Thesis Token)
             let ethSwapBalance;
             ethSwapBalance = await token.balanceOf(ethSwap.address)
             assert.equal(ethSwapBalance.toString(), tokens('999900'))
@@ -73,18 +69,31 @@ contract('EthSwap', ([deployer, investor]) => {
         })
     })
 
-    describe('selTokens()', async () => {
-        let result
+    describe('Investor tries to purchase tokens without sufficient funds', async () => {
+        it('buyTokens should be rejected', async () => {
+            // no sufficient funds of investor
+            await ethSwap.buyTokens({ from: investor, value: tokens('1000')}).should.be.rejected;
+        })
+    })
 
-        before(async () => {
+    describe('Investor sells tokens without approval', async () => {
+        it('sellTokens should be rejected', async () => {
+             // Investor tries to sells tokens without approval
+            await ethSwap.sellTokens(tokens('100'), { from: investor}).should.be.rejected
+        })
+    })
+
+
+    describe('Investor sells tokens with approval', async () => {
+        it('investor sells tokens valid', async () => {
             // we need to approve the transfer of the tokens before we can sell the Tokens
             // investor must approve tokens before the sell
-            await token.approve(ethSwap.address, tokens('100'), { from: investor})
+            let result = await token.approve(ethSwap.address, tokens('100'), { from: investor})
+
             // Investor sells tokens
             result = await ethSwap.sellTokens(tokens('100'), { from: investor})
-        })
-        it('allows user to sell tokens from ethSwap for a fixed price', async () => {
-            // Check investor token balance after sell
+
+             // Check investor token balance after sell
             let investorBalance = await token.balanceOf(investor)
             assert.equal(investorBalance.toString(), tokens('0'))
 
@@ -104,67 +113,81 @@ contract('EthSwap', ([deployer, investor]) => {
             assert.equal(event.amount.toString(), tokens('100').toString())
             assert.equal(event.rate.toString(), '100')
 
-            // FAILURE: investor can't sell more token than they have
+        })
+    })
+
+    describe('Investor tries to sell tokens without sufficient funds', async () => {
+        it('sellTokens should be rejected', async () => {
+             // FAILURE: investor can't sell more token than they have
             await ethSwap.sellTokens(tokens('500'), { from: investor}).should.be.rejected;
         })
     })
-    
-    describe('Farming tokens', async () => {
-        let result;
+
+
+    describe('Investor stakes Thesis token', async () => {
+        it('before issuance', async () => {
         
-
-        it('rewards investors for staking mDai tokens', async () => {
-
-            // Check investor balance before staking -> 100 daiToken
-            result = await token.balanceOf(investor)
-            console.log(result.toString())
-            // result of 100 tokens should be correct before the staking
-            /*assert.equal(result.toString(), tokens('100'), 'investor Mock Dai wallet balance correct before staking')
-
-
             // Stake Token with approval (needed)
-
-            // IMPORTANT: Before we can stake the token, the investor must approve eth to be deposited into the tokenFarm
-            */
+            // IMPORTANT: Before we can stake the token, the investor must approve eth to be deposited into the EthSwap
             await token.approve(investor, tokens('1'), { from: investor })
             await ethSwap.stakeTokens({ from: investor, value: tokens('1')})
             
             
             // Check staking result after staking
-            result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('0'), 'investor Mock Dai wallet balance correct after staking')
+            let result = await token.balanceOf(investor)
+            assert.equal(result.toString(), tokens('0'), 'investor thesis token wallet balance correct after staking')
 
             result = await token.balanceOf(ethSwap.address)
-            assert.equal(result.toString(), tokens('1000000'), 'Token Farm Mock Dai wallet balance correct before staking')
+            assert.equal(result.toString(), tokens('1000000'), 'EthSwap Thesis token wallet balance correct before staking')
             
             result = await ethSwap.isStaking(investor)
             assert.equal(result.toString(), 'true', 'investor staking status correct after staking')
-            
-            
-            // Issue tokens
-            await ethSwap.issueToken({ from: deployer }) 
+        })
+    })
 
+    describe('Not owner of smart contract tries to issue tokens', async () => {
+        it('issueTokens should be rejected', async () => {
+             // Ensure that only onwer can issue tokens
+             await ethSwap.issueToken({ from: investor}).should.be.rejected;
+        })
+    })
+
+    describe('Owner of smart contract tries to issue tokens', async () => {
+        it('owner of smart contract can issue tokens', async () => {
+             // Ensure that only onwer can issue tokens
+             await ethSwap.issueToken({ from: deployer }).should.be.ok;
+        })
+    })
+
+    
+    describe('Staking Thesis tokens after issuance', async () => {  
+
+        it('rewards investors for staking Thesis tokens', async () => {
             // check balances after issuance -> investor should get the issued token after issueToken has been called by the owner of the smart contract
-            result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('10'), 'investor DApp Token wallet balance correct after issuance')
+            let result = await token.balanceOf(investor)
+            assert.equal(result.toString(), tokens('10'), 'investor Thesis Token wallet balance correct after issuance')
 
             // check staking balance of investor
             result = await ethSwap.stakingBalance(investor)
             assert.equal(result.toString(), tokens('1'), 'investor staking balance correct after staking')
             
-            // Ensure that only onwer can issue tokens
-            await ethSwap.issueToken({ from: investor}).should.be.rejected;
             
-            // unstake tokens
+        })
+    })
+    
+    describe('Unstaking of Ethereum token', async () => {
+
+        it('valid unstaking', async () => {
+             // unstake tokens
             await ethSwap.unstakeTokens({ from: investor, value: tokens('1') })
             
-            // check results after unstaking of Dai Token of investor
-            result = await token.balanceOf(investor)
+            // check results after unstaking of Thesis Token of investor
+            let result = await token.balanceOf(investor)
             assert.equal(result.toString(), tokens('10'), 'investor eth balance correct after staking');
 
-            // check results after unstaking of Dai Token of tokenFarm
+            // check results after unstaking of Thesis Token of EthSwap Contract
             result = await token.balanceOf(ethSwap.address)
-            assert.equal(result.toString(),tokens('999990'), 'TokenFarm Mock Dai baalance correct after staking')
+            assert.equal(result.toString(),tokens('999990'), 'EthSwap Thesis token balance correct after staking')
             
             // check staking balance of investor
             result = await ethSwap.stakingBalance(investor)
@@ -173,11 +196,14 @@ contract('EthSwap', ([deployer, investor]) => {
             // check staking status of investor
             result = await ethSwap.isStaking(investor)
             assert.equal(result.toString(), 'false', 'investor staking status correct after staking')
-
-            // try again unstaking 
-            await ethSwap.unstakeTokens({ from: investor, value: tokens('1') }).should.be.rejected;
-            
         })
     })
-    
+
+    describe('Unstaking of Ethereum token with unsufficient funds', async () => {
+        it('invalid unstaking should be rejected', async () => {
+              // try again unstaking with unsufficient funds
+            await ethSwap.unstakeTokens({ from: investor, value: tokens('1') }).should.be.rejected;
+        })
+    })
+
 })

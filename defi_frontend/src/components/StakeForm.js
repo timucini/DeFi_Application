@@ -1,8 +1,15 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
+import ethLogo from '../eth-logo.png'
 
 
 class StakeForm extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      output: '0'
+    }
+  }
     
     
     render() {
@@ -20,7 +27,7 @@ class StakeForm extends Component {
               </thead>
               <tbody>
                 <tr>
-                  <td>{web3.utils.fromWei(this.props.stakingBalance, 'Ether')} THES</td>
+                  <td>{web3.utils.fromWei(this.props.stakingBalance, 'Ether')} ETH</td>
                   <td>{web3.utils.fromWei(this.props.tokenBalance, 'Ether')} THES</td>
                 </tr>
               </tbody>
@@ -40,7 +47,7 @@ class StakeForm extends Component {
         <div>
           <label className="float-left"><b>Stake Tokens</b></label>
           <span className="float-right text-muted">
-            Balance: {web3.utils.fromWei(this.props.tokenBalance, 'Ether')}
+            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.props.ethBalance, 'Ether')}
           </span>
         </div>
         <div className="input-group mb-4">
@@ -51,10 +58,14 @@ class StakeForm extends Component {
             placeholder="0"
             required />
           <div className="input-group-append">
-            <div className="input-group-text">
-              &nbsp;&nbsp;&nbsp; THES
+          <div className="input-group-text">
+              <img src={ethLogo} height='32' alt=""/>
+              &nbsp;&nbsp;&nbsp; ETH
             </div>
           </div>
+        </div>
+        <div className="mb-3">
+          <span className="float-left text-muted">Staking Rate 1 ETH = 10 THES</span>
         </div>
         <button type="submit" className="btn btn-primary btn-block btn-lg">STAKE!</button>
       </form>
