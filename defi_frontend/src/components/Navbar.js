@@ -12,18 +12,12 @@ class NavBar extends Component {
   
   render() {
     return (
-      <div>
-        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-          <p>
-            EthSwap
-          </p>
-          <ul className="navbar-nav px-3">
-          <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
-            <small className="text-secondary">
-              <small id="account">{this.props.account}</small>
-            </small>
-
-            { this.props.account? <img
+      <nav class="navbar navbar-dark bg-dark justify-content-between">
+        <a class="navbar-brand">EthSwap</a>
+        <span class="navbar-text">
+          {this.props.account}&nbsp;&nbsp;
+          { this.props.account
+              ? <img
                 className="ml-2"
                 width='30'
                 height='30'
@@ -31,12 +25,9 @@ class NavBar extends Component {
                 alt=""
               />
               : <span></span>
-            }
-
-          </li>
-        </ul>
-        </nav>
-      </div>
+          }
+        </span>
+    </nav>
     );
   }
 }

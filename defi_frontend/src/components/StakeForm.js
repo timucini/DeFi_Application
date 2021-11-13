@@ -35,7 +35,7 @@ class StakeForm extends Component {
     
             <div className="card mb-4" >
     
-    <div className="card-body">
+    <div className="card-body bg-dark text-white">
     
       <form className="mb-3" onSubmit={(event) => {
           event.preventDefault()
