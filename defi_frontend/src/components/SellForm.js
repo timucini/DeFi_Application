@@ -84,7 +84,9 @@ class SellForm extends Component {
           <span className="float-left text-muted">Exchange Rate</span>
           <span className="float-right text-muted"> 100 THES = 1 ETH</span>
         </div>
-        <button type="submit" className="btn btn-primary btn-block btn-lg">SWAP!</button>
+        <div class="d-flex justify-content-center">
+          <button type="submit" className="btn btn-primary btn-block btn-lg">SWAP!</button>
+        </div>
       </form>
     );
   }

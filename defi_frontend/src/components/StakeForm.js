@@ -18,7 +18,7 @@ class StakeForm extends Component {
 
         return (
           <div id="content" className="mt-3">
-                 <table className="table table-borderless text-muted text-center">
+                 <table className="table table-borderless text-white text-center">
               <thead>
                 <tr>
                   <th scope="col">Staking Balance</th>
@@ -32,9 +32,8 @@ class StakeForm extends Component {
                 </tr>
               </tbody>
             </table>
-    
-            <div className="card mb-4" >
-    
+    <hr/>
+            <div className="card mb-4 border-0">
     <div className="card-body bg-dark text-white">
     
       <form className="mb-3" onSubmit={(event) => {
@@ -50,7 +49,7 @@ class StakeForm extends Component {
             &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.props.ethBalance, 'Ether')}
           </span>
         </div>
-        <div className="input-group mb-4">
+        <div className="input-group mb-1">
           <input
             type="text"
             ref={(input) => { this.input = input }}
@@ -58,16 +57,18 @@ class StakeForm extends Component {
             placeholder="0"
             required />
           <div className="input-group-append">
-          <div className="input-group-text">
-              <img src={ethLogo} height='32' alt=""/>
+          <div className="input-group-text bg-dark text-white">
+              <img src={ethLogo} height='34' alt=""/>
               &nbsp;&nbsp;&nbsp; ETH
             </div>
           </div>
         </div>
         <div className="mb-3">
-          <span className="float-left text-muted">Staking Rate 1 ETH = 10 THES</span>
+          <span className="float-left text-muted">Staking Rate: 1 ETH = 10 THES</span>
         </div>
-        <button type="submit" className="btn btn-primary btn-block btn-lg">STAKE!</button>
+        <div class="d-flex justify-content-center">
+          <button type="submit" className="btn btn-primary btn-block btn-lg">STAKE!</button>
+        </div>
       </form>
     </div>
     </div>

@@ -18,7 +18,7 @@ class UnStakeForm extends Component {
 
         return (
           <div id="content" className="mt-3">
-                 <table className="table table-borderless text-muted text-center">
+                 <table className="table table-borderless text-white text-center">
               <thead>
                 <tr>
                   <th scope="col">Staking Balance</th>
@@ -32,8 +32,8 @@ class UnStakeForm extends Component {
                 </tr>
               </tbody>
             </table>
-    
-            <div className="card mb-4" >
+            <hr/>
+            <div className="card mb-4 border-0" >
     
     <div className="card-body bg-dark text-white">
     
@@ -45,7 +45,7 @@ class UnStakeForm extends Component {
           this.props.unstakeTokens(amount)
         }}>
         <div>
-          <label className="float-left"><b>Stake Tokens</b></label>
+          <label className="float-left"><b>Unstake Tokens</b></label>
           <span className="float-right text-muted">
             &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.props.stakingBalance, 'Ether')}
           </span>
@@ -58,13 +58,15 @@ class UnStakeForm extends Component {
             placeholder="0"
             required />
           <div className="input-group-append">
-            <div className="input-group-text">
-              <img src={ethLogo} height='32' alt=""/>
+            <div className="input-group-text bg-dark text-white">
+              <img src={ethLogo} height='34' alt=""/>
               &nbsp;&nbsp;&nbsp; ETH
             </div>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary btn-block btn-lg">UNSTAKE!</button>
+        <div class="d-flex justify-content-center">
+          <button type="submit" className="btn btn-primary btn-block btn-lg">UNSTAKE!</button>
+        </div>
       </form>
     </div>
     </div>
