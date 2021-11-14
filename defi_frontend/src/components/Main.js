@@ -29,6 +29,7 @@ class Main extends Component {
 
           <TabPanel>
             <BuyForm
+              key={JSON.stringify(this.props)}
               ethBalance={this.props.ethBalance}
               tokenBalance={this.props.tokenBalance}
               buyTokens={this.props.buyTokens}
@@ -36,6 +37,7 @@ class Main extends Component {
           </TabPanel>
           <TabPanel>
             <SellForm
+              key={JSON.stringify(this.props)}
               ethBalance={this.props.ethBalance}
               tokenBalance={this.props.tokenBalance}
               sellTokens={this.props.sellTokens}
@@ -43,6 +45,7 @@ class Main extends Component {
           </TabPanel>
           <TabPanel>
             <StakeForm
+              key={JSON.stringify(this.props)}
               stakeTokens={this.props.stakeTokens}
               stakingBalance={this.props.stakingBalance}
               tokenBalance={this.props.tokenBalance}
@@ -51,6 +54,7 @@ class Main extends Component {
           </TabPanel>
           <TabPanel>
             <UnStakeForm
+              key={JSON.stringify(this.props)}
               unstakeTokens={this.props.unstakeTokens}
               stakingBalance={this.props.stakingBalance}
               tokenBalance={this.props.tokenBalance}

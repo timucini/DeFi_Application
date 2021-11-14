@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 import '../styling/App.css';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Token from '../abis/ThesisToken.json'
 import EthSwap from '../abis/EthSwap.json'
 import Navbar from './Navbar';
 import Main from './Main';
+import Loader from "react-loader-spinner";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class App extends Component {
 
-  async componentWillMount() {
+  async componentDidMount() {
     await this.loadWeb3()
     await this.loadBlockchainData()
     this.getStakingBalance()
@@ -41,9 +45,12 @@ class App extends Component {
       const token = new web3.eth.Contract(Token.abi, tokenData.address)
       this.setState({ token })
       let tokenBalance = await token.methods.balanceOf(this.state.account).call()
-      this.setState({ tokenBalance: tokenBalance.toString() })
+      if (tokenBalance != null ) {
+        this.setState({ tokenBalance: tokenBalance.toString() })
+      }
     } else {
       window.alert('Token contract not deployed to detected network.')
+      toast.error('Token contract not deployed to detected network.')
     }
 
     // Load EthSwap
@@ -53,8 +60,9 @@ class App extends Component {
       this.setState({ ethSwap })
     } else {
       window.alert('EthSwap contract not deployed to detected network.')
+      toast.error('EthSwap contract not deployed to detected network.')
     }
-
+    await this.updateBalances()
     this.setState({ loading: false })
     console.log(this.state.token)
   }
@@ -69,60 +77,79 @@ class App extends Component {
       }
       else {
         window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+        toast.error('Non-Ethereum browser detected. You should consider trying MetaMask!')
       }
   }
 
   buyTokens = (etherAmount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.buyTokens().send({ value: etherAmount, from: this.state.account }).on('transactionHash', (hash) => {
-      this.setState({ loading: false })
-    })
+    this.state.ethSwap.methods.buyTokens().send({ value: etherAmount, from: this.state.account }).on('transactionHash', async (hash) => {
+      await this.updateBalances()
+    }).catch((err) => {
+      toast.error(err.message)
+    }) 
+    this.setState({ loading: false })
   }
 
   sellTokens = (tokenAmount) => {
     this.setState({ loading: true })
-    console.log("EthSwap Address: " + this.state.ethSwap._address)
     console.log(this.state.ethSwap)
-    console.log("Sender Account: " + this.state.account)
     // NEED TO APPROVE IT BEFORE SELL!!
-    this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-      this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-        this.setState({ loading: false })
+    this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account }).on('transactionHash',  (hash) => {
+      this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+        await this.updateBalances()
       })
-    })
+    }).catch((err) => {
+      toast.error(err.message)
+    }) 
+    this.setState({ loading: false })
   }
 
   stakeTokens = (amount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', (hash) => {
-      let balance = this.state.stakingBalance + amount
-      this.setState({ stakingBalance: balance})
-      this.setState({ loading: false })
-    })
+    this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', async (hash) => {
+      await this.updateBalances()
+    }).catch((err) => {
+      toast.error(err.message)
+    }) 
+    this.setState({ loading: false })
   }
 
   unstakeTokens = (amount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.unstakeTokens().send({ from: this.state.account, value: amount }).on('transactionHash', (hash) => {
-      let balance = this.state.stakingBalance - amount
-      this.setState({ stakingBalance: balance})
-      this.setState({ loading: false })
-    })
+    this.state.ethSwap.methods.unstakeTokens().send({ from: this.state.account, value: amount }).on('transactionHash', async (hash) => {
+      await this.updateBalances()
+    }).catch((err) => {
+      toast.error(err.message)
+    }) 
+    this.setState({ loading: false })
   }
 
   getStakingBalance = async () => {
     let balance  = await this.state.ethSwap.methods.stakingBalance(this.state.account).call()
     this.setState({ stakingBalance: balance.toString() })
-    console.log(this.state.stakingBalance)
   }
 
+  async updateBalances() {
+    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    let ethBalance = await web3.eth.getBalance(this.state.account)
+    let tokenBalance = await this.state.token.methods.balanceOf(this.state.account).call()
+    let stakingBalance = await this.state.ethSwap.methods.stakingBalance(this.state.account).call()
+    this.setState({ ethBalance: ethBalance.toString()})
+    this.setState({ tokenBalance: tokenBalance.toString() })
+    this.setState({ stakingBalance: stakingBalance.toString() })
+
+  } 
 
   render() {
     let content
     if(this.state.loading) {
-      content = <p id="loader" className="text-center">Loading...</p>
+      content = <div class="d-flex justify-content-center container">
+          <Loader type="Bars" color="#00BFFF" height={80} width={80} class="align-self-center" />
+      </div>
     } else {
       content = <Main
+        key={JSON.stringify(this.props)}
         ethBalance={this.state.ethBalance}
         tokenBalance={this.state.tokenBalance}
         buyTokens={this.buyTokens}
@@ -136,7 +163,7 @@ class App extends Component {
     return (
       <div class="box">
         <div style={{ backgroundImage: 'linear-gradient(#e66465, #9198e5);' }}>
-          <Navbar account={this.state.account} />
+          <Navbar account={this.state.account} key={this.state.account} />
           <div className="container-fluid mt-5 d-flex justify-content-center">
             <div className="row">
               <main role="main" className="col-lg-12 ml-auto mr-auto" style={{ maxWidth: '800px', minWidth: '600px' }}>
@@ -147,6 +174,18 @@ class App extends Component {
                 </div>
               </main>
             </div>
+            <ToastContainer
+              position="bottom-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              toastStyle={{ backgroundColor: "#121212", color:"white" }}
+            />
           </div>
         </div>
       </div>

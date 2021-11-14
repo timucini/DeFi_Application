@@ -51,10 +51,13 @@ class StakeForm extends Component {
         </div>
         <div className="input-group mb-1">
           <input
-            type="text"
+            type="number"
             ref={(input) => { this.input = input }}
             className="form-control form-control-lg"
             placeholder="0"
+            max={web3.utils.fromWei(this.props.ethBalance, 'Ether')}
+            min="0"
+            step="any"
             required />
           <div className="input-group-append">
           <div className="input-group-text bg-dark text-white">

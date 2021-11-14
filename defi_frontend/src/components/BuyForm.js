@@ -30,7 +30,7 @@ class BuyForm extends Component {
         </div>
         <div className="input-group mb-4">
           <input
-            type="text"
+            type="number"
             onChange={(event) => {
               const etherAmount = this.input.value.toString()
               this.setState({
@@ -40,6 +40,9 @@ class BuyForm extends Component {
             ref={(input) => { this.input = input }}
             className="form-control form-control-lg"
             placeholder="0"
+            max={web3.utils.fromWei(this.props.ethBalance, 'Ether')}
+            min="0"
+            step="any"
             required />
           <div className="input-group-append">
             <div className="input-group-text bg-dark text-white">
