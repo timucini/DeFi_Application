@@ -15,7 +15,6 @@ class App extends Component {
   async componentDidMount() {
     await this.loadWeb3()
     await this.loadBlockchainData()
-    this.getStakingBalance()
   }
   
   constructor(props) {
@@ -87,8 +86,10 @@ class App extends Component {
       await this.updateBalances()
     }).catch((err) => {
       toast.error(err.message)
-    }) 
-    this.setState({ loading: false })
+    }).finally( async () => {
+      this.setState({ loading: false })
+      await this.updateBalances()
+    });
   }
 
   sellTokens = (tokenAmount) => {
@@ -97,37 +98,38 @@ class App extends Component {
     // NEED TO APPROVE IT BEFORE SELL!!
     this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account }).on('transactionHash',  (hash) => {
       this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-        await this.updateBalances()
+
       })
     }).catch((err) => {
       toast.error(err.message)
-    }) 
-    this.setState({ loading: false })
+    }).finally( async () => {
+      this.setState({ loading: false })
+      await this.updateBalances()
+    });
   }
 
   stakeTokens = (amount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', async (hash) => {
-      await this.updateBalances()
+    this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', (hash) => {
+    
     }).catch((err) => {
       toast.error(err.message)
-    }) 
-    this.setState({ loading: false })
+    }).finally( async () => {
+      this.setState({ loading: false })
+      await this.updateBalances()
+    });
   }
 
   unstakeTokens = (amount) => {
     this.setState({ loading: true })
     this.state.ethSwap.methods.unstakeTokens().send({ from: this.state.account, value: amount }).on('transactionHash', async (hash) => {
-      await this.updateBalances()
+     
     }).catch((err) => {
       toast.error(err.message)
-    }) 
-    this.setState({ loading: false })
-  }
-
-  getStakingBalance = async () => {
-    let balance  = await this.state.ethSwap.methods.stakingBalance(this.state.account).call()
-    this.setState({ stakingBalance: balance.toString() })
+    }).finally( async () => {
+      this.setState({ loading: false })
+      await this.updateBalances()
+    });
   }
 
   async updateBalances() {
@@ -138,7 +140,6 @@ class App extends Component {
     this.setState({ ethBalance: ethBalance.toString()})
     this.setState({ tokenBalance: tokenBalance.toString() })
     this.setState({ stakingBalance: stakingBalance.toString() })
-
   } 
 
   render() {
@@ -149,7 +150,6 @@ class App extends Component {
       </div>
     } else {
       content = <Main
-        key={JSON.stringify(this.props)}
         ethBalance={this.state.ethBalance}
         tokenBalance={this.state.tokenBalance}
         buyTokens={this.buyTokens}

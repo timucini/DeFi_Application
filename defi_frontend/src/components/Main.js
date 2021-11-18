@@ -10,8 +10,28 @@ class Main extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      currentForm: 'buy'
+      ethBalance: '0',
+      tokenBalance: '0',
+      stakingBalance: '0'
     }
+  }
+
+  componentDidMount() {
+    this.setState({
+      stakingBalance: this.props.stakingBalance,
+      tokenBalance: this.props.tokenBalance,
+      ethBalance: this.props.ethBalance
+    })
+  }
+
+  componentWillReceiveProps(nextprobs) {
+    console.log("received")
+    console.log(nextprobs)
+    this.setState({
+      stakingBalance: nextprobs.stakingBalance,
+      tokenBalance: nextprobs.tokenBalance,
+      ethBalance: nextprobs.ethBalance
+    })
   }
 
   render() {
@@ -30,16 +50,16 @@ class Main extends Component {
           <TabPanel>
             <BuyForm
               key={JSON.stringify(this.props)}
-              ethBalance={this.props.ethBalance}
-              tokenBalance={this.props.tokenBalance}
+              ethBalance={this.state.ethBalance}
+              tokenBalance={this.state.tokenBalance}
               buyTokens={this.props.buyTokens}
             />
           </TabPanel>
           <TabPanel>
             <SellForm
               key={JSON.stringify(this.props)}
-              ethBalance={this.props.ethBalance}
-              tokenBalance={this.props.tokenBalance}
+              ethBalance={this.state.ethBalance}
+              tokenBalance={this.state.tokenBalance}
               sellTokens={this.props.sellTokens}
             />
           </TabPanel>
@@ -47,17 +67,17 @@ class Main extends Component {
             <StakeForm
               key={JSON.stringify(this.props)}
               stakeTokens={this.props.stakeTokens}
-              stakingBalance={this.props.stakingBalance}
-              tokenBalance={this.props.tokenBalance}
-              ethBalance={this.props.ethBalance}
+              stakingBalance={this.state.stakingBalance}
+              tokenBalance={this.state.tokenBalance}
+              ethBalance={this.state.ethBalance}
             />
           </TabPanel>
           <TabPanel>
             <UnStakeForm
               key={JSON.stringify(this.props)}
               unstakeTokens={this.props.unstakeTokens}
-              stakingBalance={this.props.stakingBalance}
-              tokenBalance={this.props.tokenBalance}
+              stakingBalance={this.state.stakingBalance}
+              tokenBalance={this.state.tokenBalance}
             />
           </TabPanel>
         </Tabs>

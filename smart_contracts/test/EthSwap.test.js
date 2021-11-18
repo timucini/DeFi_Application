@@ -2,6 +2,7 @@ const { assert } = require('chai');
 
 const Token = artifacts.require("ThesisToken");
 const EthSwap = artifacts.require("EthSwap");
+const { toBN } = web3.utils;
 
 require('chai')
     .use(require('chai-as-promised'))
@@ -40,6 +41,14 @@ contract('EthSwap', ([deployer, investor]) => {
         it('contract has tokens', async () => {
             let balance = await token.balanceOf(ethSwap.address)
             assert.equal(balance.toString(), tokens('1000000'))
+        })
+    })
+
+    describe('EthSwap Contract should no Ether before Investor buys token', async () => {
+        it('EthBalance of Contract should be 0', async () => {
+             // check the ethereum balance for ethSwap
+             let ethSwapBalance = await web3.eth.getBalance(ethSwap.address)
+             assert.equal(ethSwapBalance.toString(), tokens('0'))
         })
     })
 
@@ -86,12 +95,49 @@ contract('EthSwap', ([deployer, investor]) => {
 
     describe('Investor sells tokens with approval', async () => {
         it('investor sells tokens valid', async () => {
+
+            // Initial Blance of investor
+            let ethBalanceBeforeSell = toBN(await web3.eth.getBalance(investor))
+            //console.log(`Initial: ${ethBalanceBeforeSell.toString()}`);
+
             // we need to approve the transfer of the tokens before we can sell the Tokens
             // investor must approve tokens before the sell
             let result = await token.approve(ethSwap.address, tokens('100'), { from: investor})
+            //console.log(result)
+
+            // Gas used of recipent
+            let gasUsedApprove = toBN(result.receipt.gasUsed)
+            //console.log(`GasUsed Approve: ${gasUsedApprove}`);
+            
+            
+            // Gas Price for transaction
+            let transaction = await web3.eth.getTransaction(result.tx);
+            let gasPriceApprove = toBN(transaction.gasPrice);
+            //console.log(`GasPriceApprove: ${gasPriceApprove}`);
 
             // Investor sells tokens
             result = await ethSwap.sellTokens(tokens('100'), { from: investor})
+            //console.log(result)
+
+            // Gas used of recipent
+            let gasUsedSell = toBN(result.receipt.gasUsed)
+            //console.log(`GasUsed Sell: ${gasUsedSell}`);
+              
+            // Gas Price for transaction
+            transaction = await web3.eth.getTransaction(result.tx);
+            let gasPriceSell = toBN(transaction.gasPrice);
+            //console.log(`GasPriceSell: ${gasPriceSell}`);
+
+            let ethBalanceAfterSell = toBN(await web3.eth.getBalance(investor))
+
+            let combinedBalance = ethBalanceBeforeSell.add(gasUsedApprove).add(gasUsedSell).add(gasPriceApprove).add(gasPriceSell).add(toBN(tokens('1')))
+            //console.log(combinedBalance)
+            // check eth Balance of investor with gas paid
+            assert.equal(
+                combinedBalance.toString(), ethBalanceAfterSell.toString()
+            )
+            
+
 
              // Check investor token balance after sell
             let investorBalance = await token.balanceOf(investor)
@@ -178,8 +224,18 @@ contract('EthSwap', ([deployer, investor]) => {
     describe('Unstaking of Ethereum token', async () => {
 
         it('valid unstaking', async () => {
+            
+            let ethBalanceBeforeStaking = toBN(await web3.eth.getBalance(investor))
+            let stakingBalance = toBN(await ethSwap.stakingBalance(investor))
+            console.log(ethBalanceBeforeStaking.toString())
+            console.log(stakingBalance.toString())
              // unstake tokens
             await ethSwap.unstakeTokens({ from: investor, value: tokens('1') })
+
+            let ethBalanceAfterStaking = await web3.eth.getBalance(investor)
+            console.log(ethBalanceAfterStaking.toString())
+            // check Eth Balance after unstaking
+            assert.equal(ethBalanceBeforeStaking.add(stakingBalance).toString(), ethBalanceAfterStaking.toString())
             
             // check results after unstaking of Thesis Token of investor
             let result = await token.balanceOf(investor)
