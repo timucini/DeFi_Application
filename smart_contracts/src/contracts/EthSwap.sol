@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.3;
 
 import "./ThesisToken.sol";
 
@@ -126,24 +126,26 @@ contract EthSwap {
     }
 
     // 3. Unstaking Tokens (Withdraw) -> allow investor to remove tokens from the application -> from the tokaneFarm
-    function unstakeTokens() payable public {
-
+    function unstakeTokens(address payable _to) public payable {
         // Fetch staking balance
         //uint balance = stakingBalance[msg.sender]; // here ERROR? Maybe 0?
         //uint balance = 1000000000000000000;
         // require amount greater than 0
-        uint balance = stakingBalance[msg.sender];
+        uint balance = stakingBalance[_to];
         require(balance >= msg.value , "Cannot unstake more eth than staked");
 
         // transfer eth to this contract for staking
-        payable(msg.sender).transfer(msg.value);
+        //payable(msg.sender).transfer(unstakeAmount);
+
+        (bool succeed, bytes memory data) = _to.call{value: msg.value}("");
+        require(succeed, "Failed to withdraw Ether");
 
         // reset the staking balance
-        stakingBalance[msg.sender] = balance - msg.value;
+        stakingBalance[_to] = balance - msg.value;
 
-        if(stakingBalance[msg.sender] == 0) {
+        if(stakingBalance[_to] == 0) {
             // update staking status
-            isStaking[msg.sender] = false;
+            isStaking[_to] = false;
         } 
     }
 }

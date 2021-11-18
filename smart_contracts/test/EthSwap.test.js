@@ -175,8 +175,8 @@ contract('EthSwap', ([deployer, investor]) => {
         
             // Stake Token with approval (needed)
             // IMPORTANT: Before we can stake the token, the investor must approve eth to be deposited into the EthSwap
-            await token.approve(investor, tokens('1'), { from: investor })
-            await ethSwap.stakeTokens({ from: investor, value: tokens('1')})
+            await token.approve(investor, tokens('10'), { from: investor })
+            await ethSwap.stakeTokens({ from: investor, value: tokens('10')})
             
             
             // Check staking result after staking
@@ -211,11 +211,11 @@ contract('EthSwap', ([deployer, investor]) => {
         it('rewards investors for staking Thesis tokens', async () => {
             // check balances after issuance -> investor should get the issued token after issueToken has been called by the owner of the smart contract
             let result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('10'), 'investor Thesis Token wallet balance correct after issuance')
+            assert.equal(result.toString(), tokens('100'), 'investor Thesis Token wallet balance correct after issuance')
 
             // check staking balance of investor
             result = await ethSwap.stakingBalance(investor)
-            assert.equal(result.toString(), tokens('1'), 'investor staking balance correct after staking')
+            assert.equal(result.toString(), tokens('10'), 'investor staking balance correct after staking')
             
             
         })
@@ -230,20 +230,20 @@ contract('EthSwap', ([deployer, investor]) => {
             console.log(ethBalanceBeforeStaking.toString())
             console.log(stakingBalance.toString())
              // unstake tokens
-            await ethSwap.unstakeTokens({ from: investor, value: tokens('1') })
+            await ethSwap.unstakeTokens(investor, { value: tokens('10')})
 
             let ethBalanceAfterStaking = await web3.eth.getBalance(investor)
             console.log(ethBalanceAfterStaking.toString())
             // check Eth Balance after unstaking
-            assert.equal(ethBalanceBeforeStaking.add(stakingBalance).toString(), ethBalanceAfterStaking.toString())
+            assert.equal(ethBalanceBeforeStaking.add(toBN(tokens('10'))).toString(), ethBalanceAfterStaking.toString())
             
             // check results after unstaking of Thesis Token of investor
             let result = await token.balanceOf(investor)
-            assert.equal(result.toString(), tokens('10'), 'investor eth balance correct after staking');
+            assert.equal(result.toString(), tokens('100'), 'investor eth balance correct after staking');
 
             // check results after unstaking of Thesis Token of EthSwap Contract
             result = await token.balanceOf(ethSwap.address)
-            assert.equal(result.toString(),tokens('999990'), 'EthSwap Thesis token balance correct after staking')
+            assert.equal(result.toString(),tokens('999900'), 'EthSwap Thesis token balance correct after staking')
             
             // check staking balance of investor
             result = await ethSwap.stakingBalance(investor)
@@ -258,7 +258,7 @@ contract('EthSwap', ([deployer, investor]) => {
     describe('Unstaking of Ethereum token with unsufficient funds', async () => {
         it('invalid unstaking should be rejected', async () => {
               // try again unstaking with unsufficient funds
-            await ethSwap.unstakeTokens({ from: investor, value: tokens('1') }).should.be.rejected;
+            await ethSwap.unstakeTokens(investor, { value: tokens('1')}).should.be.rejected;
         })
     })
 

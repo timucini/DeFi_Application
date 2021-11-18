@@ -7,8 +7,26 @@ class SellForm extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      ethBalance: '0',
+      tokenBalance: '0',
       output: '0'
     }
+  }
+
+  componentDidMount() {
+    this.setState({
+      tokenBalance: this.props.tokenBalance,
+      ethBalance: this.props.ethBalance
+    })
+  }
+
+  componentWillReceiveProps(nextprobs) {
+    console.log("received")
+    console.log(nextprobs)
+    this.setState({
+      tokenBalance: nextprobs.tokenBalance,
+      ethBalance: nextprobs.ethBalance
+    })
   }
 
   render() {
@@ -26,7 +44,7 @@ class SellForm extends Component {
         <div>
           <label className="float-left"><b>Input&nbsp;</b></label>
           <span className="float-right text-muted">
-            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.props.tokenBalance, 'Ether')}
+            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.state.tokenBalance, 'Ether')}
           </span>
         </div>
         <div className="input-group mb-4">
@@ -41,7 +59,7 @@ class SellForm extends Component {
             ref={(input) => { this.input = input }}
             className="form-control form-control-lg"
             placeholder="0"
-            max={web3.utils.fromWei(this.props.tokenBalance, 'Ether')}
+            max={web3.utils.fromWei(this.state.tokenBalance, 'Ether')}
             min="0"
             step="any"
             required />
@@ -64,7 +82,7 @@ class SellForm extends Component {
         <div>
           <label className="float-left"><b>Output</b></label>
           <span className="float-right text-muted">
-            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.props.ethBalance, 'Ether')}
+            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.state.ethBalance, 'Ether')}
           </span>
         </div>
         <div className="input-group mb-2">

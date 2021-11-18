@@ -7,8 +7,29 @@ class StakeForm extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      ethBalance: '0',
+      tokenBalance: '0',
+      stakingBalance: '0',
       output: '0'
     }
+  }
+
+  componentDidMount() {
+    this.setState({
+      tokenBalance: this.props.tokenBalance,
+      ethBalance: this.props.ethBalance,
+      stakingBalance: this.props.stakingBalance
+    })
+  }
+
+  componentWillReceiveProps(nextprobs) {
+    console.log("received")
+    console.log(nextprobs)
+    this.setState({
+      tokenBalance: nextprobs.tokenBalance,
+      ethBalance: nextprobs.ethBalance,
+      stakingBalance: nextprobs.stakingBalance
+    })
   }
     
     
@@ -27,8 +48,8 @@ class StakeForm extends Component {
               </thead>
               <tbody>
                 <tr>
-                  <td>{web3.utils.fromWei(this.props.stakingBalance, 'Ether')} ETH</td>
-                  <td>{web3.utils.fromWei(this.props.tokenBalance, 'Ether')} THES</td>
+                  <td>{web3.utils.fromWei(this.state.stakingBalance, 'Ether')} ETH</td>
+                  <td>{web3.utils.fromWei(this.state.tokenBalance, 'Ether')} THES</td>
                 </tr>
               </tbody>
             </table>
@@ -55,7 +76,7 @@ class StakeForm extends Component {
             ref={(input) => { this.input = input }}
             className="form-control form-control-lg"
             placeholder="0"
-            max={web3.utils.fromWei(this.props.ethBalance, 'Ether')}
+            max={web3.utils.fromWei(this.state.ethBalance, 'Ether')}
             min="0"
             step="any"
             required />

@@ -84,6 +84,7 @@ class App extends Component {
     this.setState({ loading: true })
     this.state.ethSwap.methods.buyTokens().send({ value: etherAmount, from: this.state.account }).on('transactionHash', async (hash) => {
       await this.updateBalances()
+      toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
     }).finally( async () => {
@@ -98,7 +99,8 @@ class App extends Component {
     // NEED TO APPROVE IT BEFORE SELL!!
     this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account }).on('transactionHash',  (hash) => {
       this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-
+        await this.updateBalances()
+        toast.success("Transaction successfully completed")
       })
     }).catch((err) => {
       toast.error(err.message)
@@ -110,8 +112,9 @@ class App extends Component {
 
   stakeTokens = (amount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', (hash) => {
-    
+    this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', async (hash) => {
+      await this.updateBalances()
+      toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
     }).finally( async () => {
@@ -122,8 +125,9 @@ class App extends Component {
 
   unstakeTokens = (amount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.unstakeTokens().send({ from: this.state.account, value: amount }).on('transactionHash', async (hash) => {
-     
+    this.state.ethSwap.methods.unstakeTokens(this.state.account).send({ value: amount, from: this.state.account }).on('transactionHash', async (hash) => {
+      await this.updateBalances()
+      toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
     }).finally( async () => {

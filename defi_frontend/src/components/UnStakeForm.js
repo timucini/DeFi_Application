@@ -4,12 +4,33 @@ import ethLogo from '../eth-logo.png'
 
 
 class UnStakeForm extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-          output: '0'
-        }
-      }
+  constructor(props) {
+    super(props)
+    this.state = {
+      ethBalance: '0',
+      tokenBalance: '0',
+      stakingBalance: '0',
+      output: '0'
+    }
+  }
+
+  componentDidMount() {
+    this.setState({
+      tokenBalance: this.props.tokenBalance,
+      ethBalance: this.props.ethBalance,
+      stakingBalance: this.props.stakingBalance
+    })
+  }
+
+  componentWillReceiveProps(nextprobs) {
+    console.log("received")
+    console.log(nextprobs)
+    this.setState({
+      tokenBalance: nextprobs.tokenBalance,
+      ethBalance: nextprobs.ethBalance,
+      stakingBalance: nextprobs.stakingBalance
+    })
+  }
     
     
     render() {
@@ -27,8 +48,8 @@ class UnStakeForm extends Component {
               </thead>
               <tbody>
                 <tr>
-                  <td>{web3.utils.fromWei(this.props.stakingBalance, 'Ether')} ETH</td>
-                  <td>{web3.utils.fromWei(this.props.tokenBalance, 'Ether')} THES</td>
+                  <td>{web3.utils.fromWei(this.state.stakingBalance, 'Ether')} ETH</td>
+                  <td>{web3.utils.fromWei(this.state.tokenBalance, 'Ether')} THES</td>
                 </tr>
               </tbody>
             </table>
@@ -47,7 +68,7 @@ class UnStakeForm extends Component {
         <div>
           <label className="float-left"><b>Unstake Tokens</b></label>
           <span className="float-right text-muted">
-            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.props.stakingBalance, 'Ether')}
+            &nbsp;&nbsp;Balance: {web3.utils.fromWei(this.state.stakingBalance, 'Ether')}
           </span>
         </div>
         <div className="input-group mb-4">
@@ -56,7 +77,7 @@ class UnStakeForm extends Component {
             ref={(input) => { this.input = input }}
             className="form-control form-control-lg"
             placeholder="0"
-            max={web3.utils.fromWei(this.props.stakingBalance, 'Ether')}
+            max={web3.utils.fromWei(this.state.stakingBalance, 'Ether')}
             min="0"
             step="any"
             required />
