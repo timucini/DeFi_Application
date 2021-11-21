@@ -90,10 +90,6 @@ contract EthSwap {
         // require amount to stake is greater than 0 
         require(msg.value > 0, "amount cannot be 0");
 
-        //msg.sender.approve(msg.sender, msg.value);
-        // Transfer eth to this (tokenfarm) contract for staking
-        payable(owner).transfer(msg.value);
-
         // Update staking balance
         stakingBalance[msg.sender] =  stakingBalance[msg.sender] + msg.value;
 
@@ -126,22 +122,22 @@ contract EthSwap {
     }
 
     // 3. Unstaking Tokens (Withdraw) -> allow investor to remove tokens from the application -> from the tokaneFarm
-    function unstakeTokens(address payable _to) public payable {
+    function unstakeTokens(address payable _to, uint _amount) public {
         // Fetch staking balance
         //uint balance = stakingBalance[msg.sender]; // here ERROR? Maybe 0?
         //uint balance = 1000000000000000000;
         // require amount greater than 0
         uint balance = stakingBalance[_to];
-        require(balance >= msg.value , "Cannot unstake more eth than staked");
+        require(balance >= _amount , "Cannot unstake more eth than staked");
 
         // transfer eth to this contract for staking
         //payable(msg.sender).transfer(unstakeAmount);
 
-        (bool succeed, bytes memory data) = _to.call{value: msg.value}("");
+        (bool succeed, bytes memory data) = _to.call{value: _amount}("");
         require(succeed, "Failed to withdraw Ether");
 
         // reset the staking balance
-        stakingBalance[_to] = balance - msg.value;
+        stakingBalance[_to] = balance - _amount;
 
         if(stakingBalance[_to] == 0) {
             // update staking status

@@ -125,7 +125,7 @@ class App extends Component {
 
   unstakeTokens = (amount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.unstakeTokens(this.state.account).send({ value: amount, from: this.state.account }).on('transactionHash', async (hash) => {
+    this.state.ethSwap.methods.unstakeTokens(this.state.account, amount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
       await this.updateBalances()
       toast.success("Transaction successfully completed")
     }).catch((err) => {

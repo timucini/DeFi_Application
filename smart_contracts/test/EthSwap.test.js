@@ -230,7 +230,7 @@ contract('EthSwap', ([deployer, investor]) => {
             console.log(ethBalanceBeforeStaking.toString())
             console.log(stakingBalance.toString())
              // unstake tokens
-            await ethSwap.unstakeTokens(investor, { value: tokens('10')})
+            await ethSwap.unstakeTokens(investor, tokens('10'))
 
             let ethBalanceAfterStaking = await web3.eth.getBalance(investor)
             console.log(ethBalanceAfterStaking.toString())
