@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.3;
 
+/// @title Migrations Contract
+/// @author Timur Burkholz
+/// @notice This contract is implemented for a thesis, migrate Thesis Token and EthSwap Contract on Blockchain
+/// @custom:experimental This is an experimental contract.
 contract Migrations {
   address public owner = msg.sender;
   uint public last_completed_migration;

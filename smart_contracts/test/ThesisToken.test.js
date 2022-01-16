@@ -49,14 +49,17 @@ contract('ThesisToken', ([deployer, recipient, sender, sender2, recipient2]) => 
     describe('transfer ThesisToken from smart contract to recipient', async () => {    
         it('recipient should get tokens', async () => {
             let result = await token.transfer(recipient, tokens('10'), {from: deployer})
-            let balanceRecipient = await token.balanceOf(recipient)
+            let balanceRecipient = await token._balanceOf(recipient)
+
+            console.log("result: " + result.toString())
+            console.log("balanceRecipient: " + balanceRecipient.toString())
             assert.equal(balanceRecipient,tokens('10'))
 
-              // check the triggered Event
-              const event = result.logs[0].args
-              assert.equal(event._from, deployer)
-              assert.equal(event._to, recipient)
-              assert.equal(event._value.toString(), tokens('10').toString())
+            // check the triggered Event
+            const event = result.logs[0].args
+            assert.equal(event.from, deployer)
+            assert.equal(event.to, recipient)
+            assert.equal(event.value.toString(), tokens('10').toString())
         })
     })
 
@@ -80,14 +83,14 @@ contract('ThesisToken', ([deployer, recipient, sender, sender2, recipient2]) => 
             
             let result = await token.approve(recipient, tokens('100'), { from: sender })
 
-            let allowance = await token.allowance(sender,recipient)
+            let allowance = await token._allowance(sender,recipient)
             assert.equal(tokens('100'), allowance.toString())
 
             // check the triggered Event
             const event = result.logs[0].args
-            assert.equal(event._owner, sender)
-            assert.equal(event._spender, recipient)
-            assert.equal(event._value.toString(), tokens('100').toString())
+            assert.equal(event.owner, sender)
+            assert.equal(event.spender, recipient)
+            assert.equal(event.value.toString(), tokens('100').toString())
         })
     })
 
@@ -118,9 +121,9 @@ contract('ThesisToken', ([deployer, recipient, sender, sender2, recipient2]) => 
 
            // check the triggered Event
            const event = result.logs[0].args
-           assert.equal(event._from, sender2)
-           assert.equal(event._to, recipient2)
-           assert.equal(event._value.toString(), tokens('1').toString())
+           assert.equal(event.from, sender2)
+           assert.equal(event.to, recipient2)
+           assert.equal(event.value.toString(), tokens('1').toString())
         })
     })
    

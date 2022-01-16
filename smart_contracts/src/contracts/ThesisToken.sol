@@ -1,46 +1,39 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.3;
 
+import "./IERC20.sol";
+
+
 /// @title Thesis Contract
 /// @author Timur Burkholz
 /// @notice This contract is implemented for a thesis, custom token used in EthSwap contract
 /// @custom:experimental This is an experimental contract.
-contract ThesisToken {
+contract ThesisToken is IERC20 {
     string  public name = "Thesis Token";
     string  public symbol = "THES";
-    uint256 public totalSupply = 1000000000000000000000000; // 1 million tokens
+    uint256 public _totalSupply = 1000000000000000000000000; // 1 million tokens
     uint8   public decimals = 18;
 
-    event Transfer(
-        address indexed _from,
-        address indexed _to,
-        uint256 _value
-    );
-
-    event Approval(
-        address indexed _owner,
-        address indexed _spender,
-        uint256 _value
-    );
 
     // Mapping of balances of addresses, that own tokens
-    mapping(address => uint256) public balanceOf;
+    mapping(address => uint256) public _balanceOf;
 
     // allowance of a specific use to send his funds
-    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public _allowance;
 
     constructor() public {
-        balanceOf[msg.sender] = totalSupply;
+        _balanceOf[msg.sender] = _totalSupply;
     }
 
     /// @notice here Thesis token will be transfered from sender to receiver
     /// @param _to: payable address of receiver
     /// @param _value: amount of thesis token
     /// @dev triggers Transfer event
-    function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] >= _value);
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
+    /// @return success (boolean)
+    function transfer(address _to, uint256 _value) public override returns (bool success) {
+        require(_balanceOf[msg.sender] >= _value);
+        _balanceOf[msg.sender] -= _value;
+        _balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -48,9 +41,10 @@ contract ThesisToken {
     /// @notice here a sender approve the transfer of thesis tokens (used for handling in EthSwap)
     /// @param _spender: payable address of receiver
     /// @param _value: amount of thesis token
-    /// @dev triggers Approval event
-    function approve(address _spender, uint256 _value) public returns (bool success) {
-        allowance[msg.sender][_spender] = _value;
+    /// @dev triggers Approval event#
+    /// @return success (boolean)
+    function approve(address _spender, uint256 _value) public override returns (bool success) {
+        _allowance[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
     }
@@ -60,14 +54,28 @@ contract ThesisToken {
     /// @param _to: payable address of receiver
     /// @param _value: amount of thesis token
     /// @dev triggers Transfer event, used in EthSwap
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value <= balanceOf[_from]);
+    /// @return success (boolean)
+    function transferFrom(address _from, address _to, uint256 _value) public override returns (bool success) {
+        require(_value <= _balanceOf[_from]);
         // allowance for sending of thesis tokens is required
-        require(_value <= allowance[_from][msg.sender]);
-        balanceOf[_from] -= _value;
-        balanceOf[_to] += _value;
-        allowance[_from][msg.sender] -= _value;
+        require(_value <= _allowance[_from][msg.sender]);
+        _balanceOf[_from] -= _value;
+        _balanceOf[_to] += _value;
+        _allowance[_from][msg.sender] -= _value;
         emit Transfer(_from, _to, _value);
         return true;
     }
+
+    function totalSupply() public view virtual override returns (uint256) {
+        return _totalSupply;
+    }
+
+    function balanceOf(address account) public view virtual override returns (uint256) {
+        return _balanceOf[account];
+    }
+
+    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+        return _allowance[owner][spender];
+    }
+
 }

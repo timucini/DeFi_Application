@@ -93,21 +93,20 @@ class App extends Component {
     });
   }
 
-  sellTokens = (tokenAmount) => {
-    this.setState({ loading: true })
+  sellTokens =  async (tokenAmount) => {
+    await this.setState({ loading: true })
     console.log(this.state.ethSwap)
     // NEED TO APPROVE IT BEFORE SELL!!
-    this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account }).on('transactionHash',  (hash) => {
-      this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-        await this.updateBalances()
+    await this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account });
+      this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => { 
+      }).catch((err) => {
+        toast.error(err.message)
+      }).finally( async () => {
+        this.setState({ loading: false })
         toast.success("Transaction successfully completed")
-      })
-    }).catch((err) => {
-      toast.error(err.message)
-    }).finally( async () => {
-      this.setState({ loading: false })
-      await this.updateBalances()
-    });
+        await this.updateBalances()
+    })
+
   }
 
   stakeTokens = (amount) => {
