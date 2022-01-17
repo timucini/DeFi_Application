@@ -19119,12 +19119,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xBDBDc1ba80dda68b247dA5717c47d6fa73CF574C",
-      "transactionHash": "0x4ebfbdfaf2f6810c61535ef67bfa624fcb879edd7fe5e4fdca403dab36e31c34"
+      "address": "0xf446DCd38429c360b066F0e60E97706F7f85b18D",
+      "transactionHash": "0x749d29329232e591a12e88be357afb55294b1949baf7cfdc910ada8afdcec986"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2022-01-17T20:24:50.444Z",
+  "updatedAt": "2022-01-17T21:34:51.811Z",
   "networkType": "ethereum",
   "devdoc": {
     "author": "Timur Burkholz",

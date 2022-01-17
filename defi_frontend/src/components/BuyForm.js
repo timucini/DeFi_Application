@@ -3,6 +3,11 @@ import tokenLogo from '../token-logo.png'
 import ethLogo from '../eth-logo.png'
 import Web3 from 'web3'
 
+/**
+ * @author Timur Burkholz
+ * @description Buy form to buy tokens
+ * @version 1.0.0
+ */
 class BuyForm extends Component {
   constructor(props) {
     super(props)

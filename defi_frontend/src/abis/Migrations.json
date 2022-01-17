@@ -2204,12 +2204,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x1121ea0E88e7b72f5cd875A5263a0c04Aa71042d",
-      "transactionHash": "0x9f1e819927aa3e67ffe7195017c07095f7c8f3763012aaab575e2a5afc0e689f"
+      "address": "0xF69E6E879D191cF59Dc816d2d1431347f66c0D9a",
+      "transactionHash": "0xb02b687eb74e480029bccead3dfc5a6d5563fe858a83f07bc958fa2b978bb1e2"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2022-01-17T20:24:50.456Z",
+  "updatedAt": "2022-01-17T21:34:51.856Z",
   "networkType": "ethereum",
   "devdoc": {
     "author": "Timur Burkholz",

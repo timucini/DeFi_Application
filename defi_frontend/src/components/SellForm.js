@@ -3,6 +3,11 @@ import tokenLogo from '../token-logo.png'
 import ethLogo from '../eth-logo.png'
 import Web3 from 'web3'
 
+/**
+ * @author Timur Burkholz
+ * @description Sell form to sell tokens
+ * @version 1.0.0
+ */
 class SellForm extends Component {
   constructor(props) {
     super(props)

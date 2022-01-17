@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import Identicon from 'identicon.js';
 
+/**
+ * @author Timur Burkholz
+ * @description NavBar for site
+ * @version 1.0.0
+ */
 class NavBar extends Component {
   constructor(props) {
     super(props)

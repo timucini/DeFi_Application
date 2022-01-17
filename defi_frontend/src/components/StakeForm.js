@@ -2,7 +2,11 @@ import React, { Component } from 'react'
 import Web3 from 'web3'
 import ethLogo from '../eth-logo.png'
 
-
+/**
+ * @author Timur Burkholz
+ * @description Stake form to stake ether
+ * @version 1.0.0
+ */
 class StakeForm extends Component {
   constructor(props) {
     super(props)

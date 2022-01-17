@@ -10,8 +10,16 @@ import Loader from "react-loader-spinner";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+/**
+ * @author Timur Burkholz
+ * @description main components of react app. Here functions are defined and components are loaded
+ * @version 1.0.0
+ */
 class App extends Component {
 
+  /**
+   * @description will be called when componend is loaded or refreshed. Connect MetaMask and load Blockchain-Data
+   */
   async componentDidMount() {
     await this.loadWeb3()
     await this.loadBlockchainData()
@@ -30,14 +38,17 @@ class App extends Component {
     }
   }
 
-
+  /**
+   * @description loading of Blockchain-Data. Here data of both smart contracts is loaded from connected network. 
+   * @throws alert if smart contract are not deployed on connected network.
+   */
   async loadBlockchainData() {
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     const ethAmount = await web3.eth.getBalance(this.state.account)
 
     this.setState({ ethBalance: ethAmount})
     
-    // Load Token
+    // Load Thesis Token Smart Contract
     const networkId =  await web3.eth.net.getId()
     const tokenData = Token.networks[networkId]
     if(tokenData) {
@@ -52,7 +63,7 @@ class App extends Component {
       toast.error('Token contract not deployed to detected network.')
     }
 
-    // Load EthSwap
+    // Load EthSwap Smart Contract
     const ethSwapData = EthSwap.networks[networkId]
     if(ethSwapData) {
       const ethSwap = new web3.eth.Contract(EthSwap.abi, ethSwapData.address)
@@ -67,7 +78,10 @@ class App extends Component {
   }
 
 
-  // load ethererum provider with MetaMask
+   /**
+   * @description load ethererum provider with MetaMask. Web3 ist mandetory to interact with blockchain.
+   * @throws alert if MetaMask can't be loaded.
+   */
   async loadWeb3() {
     if(window.ethereum) {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -80,10 +94,13 @@ class App extends Component {
       }
   }
 
+  /**
+   * @description calls EthSwap Smart Contract "buyTokens" function. Here token is bought with ether
+   * @param etherAmount : amount of Ether to buy Tokens with
+   */
   buyTokens = (etherAmount) => {
     this.setState({ loading: true })
     this.state.ethSwap.methods.buyTokens().send({ value: etherAmount, from: this.state.account }).on('transactionHash', async (hash) => {
-      await this.updateBalances()
       toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
@@ -93,6 +110,11 @@ class App extends Component {
     });
   }
 
+  /**
+   * @description first calls "approve" function of EthSwap Smart Contract. Secondly, if approved, "sellTokens" function of contract is called.
+   * here tokens can be sold for ether. 
+   * @param tokenAmount : amount of tokens to sell for ether
+   */
   sellTokens =  async (tokenAmount) => {
     await this.setState({ loading: true })
     console.log(this.state.ethSwap)
@@ -109,10 +131,13 @@ class App extends Component {
 
   }
 
+  /**
+   * @description calls EthSwap Smart Contract "stakeTokens" function. Ether is staked, Staking balance of investor will be saved
+   * @param amount : amount of Ether to stake
+   */
   stakeTokens = (amount) => {
     this.setState({ loading: true })
     this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', async (hash) => {
-      await this.updateBalances()
       toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
@@ -122,10 +147,13 @@ class App extends Component {
     });
   }
 
+  /**
+   * @description calls EthSwap Smart Contract "unstakeTokens" function. Here Ether is unstaked, investor will receive his invested ether.
+   * @param amount : amount of Ether to unstake
+   */
   unstakeTokens = (amount) => {
     this.setState({ loading: true })
     this.state.ethSwap.methods.unstakeTokens(this.state.account, amount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-      await this.updateBalances()
       toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
@@ -135,6 +163,9 @@ class App extends Component {
     });
   }
 
+  /**
+   * @description updates states
+   */
   async updateBalances() {
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     let ethBalance = await web3.eth.getBalance(this.state.account)

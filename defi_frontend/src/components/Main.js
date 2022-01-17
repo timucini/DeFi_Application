@@ -6,6 +6,11 @@ import UnStakeForm from './UnStakeForm'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 
+/**
+ * @author Timur Burkholz
+ * @description compents used as parent for buy / sell / stake / unstake form
+ * @version 1.0.0
+ */
 class Main extends Component {
   constructor(props) {
     super(props)
