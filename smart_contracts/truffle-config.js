@@ -18,11 +18,11 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+const mnemonic = "spin kiwi syrup bacon local agent merit taxi visit season daring chair"
 
 require('babel-register');
 require('babel-polyfill');
@@ -82,6 +82,16 @@ module.exports = {
         port: 7545,            
         network_id: "*",       // Any network (default: none)
     },
+    kovan: {
+      networkCheckTimeout: 10000,
+      provider: () => {
+         return new HDWalletProvider(
+           mnemonic,
+           `wss://kovan.infura.io/ws/v3/83fd6cdcf2fd45d58add15f5301be191`
+         );
+      },
+      network_id: "42",
+   },
   },
 
   // Set default mocha options here, use special reporters etc.

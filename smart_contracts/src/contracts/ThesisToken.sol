@@ -6,7 +6,7 @@ import "./IERC20.sol";
 
 /// @title Thesis Contract
 /// @author Timur Burkholz
-/// @notice This contract is implemented for a thesis, custom token used in EthSwap contract
+/// @notice This contract is implemented for a thesis, custom token used in ThesisSwap contract
 /// @custom:experimental This is an experimental contract.
 contract ThesisToken is IERC20 {
     string  public name = "Thesis Token";
@@ -38,7 +38,7 @@ contract ThesisToken is IERC20 {
         return true;
     }
 
-    /// @notice here a sender approve the transfer of thesis tokens (used for handling in EthSwap)
+    /// @notice here a sender approve the transfer of thesis tokens (used for handling in ThesisSwap)
     /// @param _spender: payable address of receiver
     /// @param _value: amount of thesis token
     /// @dev triggers Approval event#
@@ -53,7 +53,7 @@ contract ThesisToken is IERC20 {
     /// @param _from: payable address of sender
     /// @param _to: payable address of receiver
     /// @param _value: amount of thesis token
-    /// @dev triggers Transfer event, used in EthSwap
+    /// @dev triggers Transfer event, used in ThesisSwap
     /// @return success (boolean)
     function transferFrom(address _from, address _to, uint256 _value) public override returns (bool success) {
         require(_value <= _balanceOf[_from]);

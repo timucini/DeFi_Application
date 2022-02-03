@@ -4,12 +4,12 @@ pragma solidity ^0.8.3;
 
 import "./ThesisToken.sol";
 
-/// @title Ethwap Contract
+/// @title ThesisSwap Contract
 /// @author Timur Burkholz
 /// @notice This contract is implemented for a thesis, used for trading Thesis Token and Staking
 /// @custom:experimental This is an experimental contract.
-contract EthSwap {
-    string public name = "EthSwap for Token";
+contract ThesisSwap {
+    string public name = "ThesisSwap for Thesis Token";
     ThesisToken public token;
     uint256 public rate = 100;
     uint256 public stakingRate = 10;
@@ -63,8 +63,8 @@ contract EthSwap {
         // Calculate the number of tokens to buy -> msg.value is the amount of ether that is sended
         uint256 tokenAmount = msg.value * rate;
 
-        // integrate a require -> check if ethSwap balance of thesis tokens is enough -> this is the address of the ethSwap Contract
-        // require ethSwap have enough tokens
+        // integrate a require -> check if ThesisSwap balance of thesis tokens is enough -> this is the address of the ThesisSwap Contract
+        // require ThesisSwap to have enough tokens
         require(token.balanceOf(address(this)) >= tokenAmount);
 
         token.transfer(msg.sender, tokenAmount);
@@ -83,12 +83,12 @@ contract EthSwap {
         // calculate the amount of Ether
         uint256 etherAmount = _amount / rate;
 
-        // require that EthSwap has enough Ether
+        // require that ThesisSwap has enough Ether
         require(address(this).balance >= etherAmount);
 
-        // Perfom sale -> transfer Thesis Tokens back to EthSwap -> again use the address of the contract -> this
+        // Perfom sale -> transfer Thesis Tokens back to ThesisSwap -> again use the address of the contract -> this
         // we can not use the simple transfer function on an ERC-20 Token
-        // instead we have to use the transferFrom function -> to allow transfer from an address to EthSwap
+        // instead we have to use the transferFrom function -> to allow transfer from an address to ThesisSwap
         token.transferFrom(msg.sender, address(this), _amount);
         // this will also trigger approve function of the ERC-20 Token -> needs to be called inside a test
 
@@ -149,7 +149,7 @@ contract EthSwap {
         uint256 balance = stakingBalance[_to];
         require(balance >= _amount, "Cannot unstake more eth than staked");
 
-        // require that EthSwap has enough Ether
+        // require that ThesisSwap has enough Ether
         require(address(this).balance >= _amount);
 
         // transfer eth to this contract for staking
