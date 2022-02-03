@@ -18,7 +18,7 @@ class NavBar extends Component {
   render() {
     return (
       <nav class="navbar navbar-dark bg-dark justify-content-between">
-        <a class="navbar-brand">EthSwap</a>
+        <a class="navbar-brand">Thesis Swap</a>
         <span class="navbar-text">
           {this.props.account}&nbsp;&nbsp;
           { this.props.account

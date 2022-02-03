@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import '../styling/App.css';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Token from '../abis/ThesisToken.json'
-import EthSwap from '../abis/EthSwap.json'
+import ThesisSwap from '../abis/ThesisSwap.json'
 import Navbar from './Navbar';
 import Main from './Main';
 import Loader from "react-loader-spinner";
@@ -30,7 +30,7 @@ class App extends Component {
     this.state = {
       account: '',
       token: {},
-      ethSwap: {},
+      thesisSwap: {},
       ethBalance: '0',
       tokenBalance: '0',
       loading: true,
@@ -63,14 +63,14 @@ class App extends Component {
       toast.error('Token contract not deployed to detected network.')
     }
 
-    // Load EthSwap Smart Contract
-    const ethSwapData = EthSwap.networks[networkId]
-    if(ethSwapData) {
-      const ethSwap = new web3.eth.Contract(EthSwap.abi, ethSwapData.address)
-      this.setState({ ethSwap })
+    // Load ThesisSwap Smart Contract
+    const thesisSwapData = ThesisSwap.networks[networkId]
+    if(thesisSwapData) {
+      const thesisSwap = new web3.eth.Contract(ThesisSwap.abi, thesisSwapData.address)
+      this.setState({ thesisSwap })
     } else {
-      window.alert('EthSwap contract not deployed to detected network.')
-      toast.error('EthSwap contract not deployed to detected network.')
+      window.alert('thesisSwap contract not deployed to detected network.')
+      toast.error('thesisSwap contract not deployed to detected network.')
     }
     await this.updateBalances()
     this.setState({ loading: false })
@@ -95,12 +95,12 @@ class App extends Component {
   }
 
   /**
-   * @description calls EthSwap Smart Contract "buyTokens" function. Here token is bought with ether
+   * @description calls thesisSwap Smart Contract "buyTokens" function. Here token is bought with ether
    * @param etherAmount : amount of Ether to buy Tokens with
    */
   buyTokens = (etherAmount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.buyTokens().send({ value: etherAmount, from: this.state.account }).on('transactionHash', async (hash) => {
+    this.state.thesisSwap.methods.buyTokens().send({ value: etherAmount, from: this.state.account }).on('transactionHash', async (hash) => {
       toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
@@ -111,16 +111,16 @@ class App extends Component {
   }
 
   /**
-   * @description first calls "approve" function of EthSwap Smart Contract. Secondly, if approved, "sellTokens" function of contract is called.
+   * @description first calls "approve" function of thesisSwap Smart Contract. Secondly, if approved, "sellTokens" function of contract is called.
    * here tokens can be sold for ether. 
    * @param tokenAmount : amount of tokens to sell for ether
    */
   sellTokens =  async (tokenAmount) => {
     await this.setState({ loading: true })
-    console.log(this.state.ethSwap)
+    console.log(this.state.thesisSwap)
     // NEED TO APPROVE IT BEFORE SELL!!
-    await this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account });
-      this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => { 
+    await this.state.token.methods.approve(this.state.thesisSwap._address, tokenAmount).send({ from: this.state.account });
+      this.state.thesisSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => { 
       }).catch((err) => {
         toast.error(err.message)
       }).finally( async () => {
@@ -132,12 +132,12 @@ class App extends Component {
   }
 
   /**
-   * @description calls EthSwap Smart Contract "stakeTokens" function. Ether is staked, Staking balance of investor will be saved
+   * @description calls thesisSwap Smart Contract "stakeTokens" function. Ether is staked, Staking balance of investor will be saved
    * @param amount : amount of Ether to stake
    */
   stakeTokens = (amount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', async (hash) => {
+    this.state.thesisSwap.methods.stakeTokens().send({ value: amount, from: this.state.account}).on('transactionHash', async (hash) => {
       toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
@@ -148,12 +148,12 @@ class App extends Component {
   }
 
   /**
-   * @description calls EthSwap Smart Contract "unstakeTokens" function. Here Ether is unstaked, investor will receive his invested ether.
+   * @description calls thesisSwap Smart Contract "unstakeTokens" function. Here Ether is unstaked, investor will receive his invested ether.
    * @param amount : amount of Ether to unstake
    */
   unstakeTokens = (amount) => {
     this.setState({ loading: true })
-    this.state.ethSwap.methods.unstakeTokens(this.state.account, amount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+    this.state.thesisSwap.methods.unstakeTokens(this.state.account, amount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
       toast.success("Transaction successfully completed")
     }).catch((err) => {
       toast.error(err.message)
@@ -170,7 +170,7 @@ class App extends Component {
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     let ethBalance = await web3.eth.getBalance(this.state.account)
     let tokenBalance = await this.state.token.methods.balanceOf(this.state.account).call()
-    let stakingBalance = await this.state.ethSwap.methods.stakingBalance(this.state.account).call()
+    let stakingBalance = await this.state.thesisSwap.methods.stakingBalance(this.state.account).call()
     this.setState({ ethBalance: ethBalance.toString()})
     this.setState({ tokenBalance: tokenBalance.toString() })
     this.setState({ stakingBalance: stakingBalance.toString() })
