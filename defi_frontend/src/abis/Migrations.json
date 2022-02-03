@@ -2195,15 +2195,21 @@
     "version": "0.8.3+commit.8d00100c.Emscripten.clang"
   },
   "networks": {
+    "42": {
+      "events": {},
+      "links": {},
+      "address": "0x039E747e7399675626bA055faF6E40fd0c52E414",
+      "transactionHash": "0xd248bd488d945957b1d063d87191568c059c34b26c8359c3613cded09525b10e"
+    },
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xa5Ce595F5EDA64b76Ba27814F1fcc323F33dB41c",
-      "transactionHash": "0x6b37f2b0db53306827915fb40d92e1d89c1115c96ec0785ea1b0479c12e1a5ca"
+      "address": "0xF8137bA6546F5dD47949C43db14e4eb259E72816",
+      "transactionHash": "0xe075da9539a2319b6f1b9ed48bcf567b3cc6b4b27cd210ba84fe81cafc14546d"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2022-02-03T14:25:10.920Z",
+  "updatedAt": "2022-02-03T15:02:59.091Z",
   "networkType": "ethereum",
   "devdoc": {
     "author": "Timur Burkholz",
