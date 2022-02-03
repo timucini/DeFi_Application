@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack://src/styling/App.css"],"names":[],"mappings":"AAAA,KACI,UAAW,CACX,YAAY,CACZ,wDAA4D,CAC5D,qBACF","file":"main.eb970175.chunk.css","sourcesContent":[".box{\r\n    width: 100%;\r\n    height:100vh;\r\n    background:linear-gradient(rgba(133, 0, 0, 0.5),transparent);\r\n    background-color:#220022 /*this your primary color*/\r\n  }"]}
