@@ -66,14 +66,23 @@ contract ThesisToken is IERC20 {
         return true;
     }
 
+    /// @notice get totalSupply of thesis Token
+    /// @return uint256 totalSupply
     function totalSupply() public view virtual override returns (uint256) {
         return _totalSupply;
     }
 
+    /// @notice get balance of specific address
+    /// @param account: address
+    /// @return unit256 balance of this accound (address)
     function balanceOf(address account) public view virtual override returns (uint256) {
         return _balanceOf[account];
     }
 
+    /// @notice get the allowance of an owner for a specific spender
+    /// @param owner: address of owner of the tokens to spend
+    /// @param spender: address a spender should be allowed to spend owners tokens
+    /// @return uint256 allowoance amount of tokens for a spender of the owners funds
     function allowance(address owner, address spender) public view virtual override returns (uint256) {
         return _allowance[owner][spender];
     }
