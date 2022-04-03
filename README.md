@@ -11,4 +11,4 @@ The **defi_frontend** folder includes a react application.
 
 # Instructions
 
-Installation and usage instructions can be found in German language at Anleitung_Thesis_Burkholz.pdf
+Installation and usage instructions can be found in German language at Anleitung_Nutzung_Prototyp_Burkholz.pdf
